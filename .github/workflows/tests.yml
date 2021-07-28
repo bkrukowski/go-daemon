@@ -44,3 +44,6 @@ jobs:
 
       - name: Ignore signals
         run: make ignore-signals
+
+      - name: Ping
+        run: make ping-ok
