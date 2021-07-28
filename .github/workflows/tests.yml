@@ -47,3 +47,6 @@ jobs:
 
       - name: Ping
         run: make ping-ok
+
+      - name: Ping error
+        run: make ping-error

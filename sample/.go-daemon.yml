@@ -14,7 +14,7 @@ processes:
     tags: ["demo", "ping"]
 
   ping-ok:
-    template: "ping google.com"
+    template: "ping localhost"
     tags: ["demo", "ping"]
 
   ignore-signals: "go run sample/ignore-signals.go"
