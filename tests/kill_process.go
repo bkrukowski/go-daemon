@@ -43,7 +43,7 @@ func processExists() bool {
 		if exitErr.ExitCode() == 1 {
 			return false
 		}
-		panic(fmt.Sprintf("Unexpected status code: %d", exitErr))
+		panic(fmt.Sprintf("Unexpected status code: %d", exitErr.ExitCode()))
 	}
 	panic(fmt.Sprintf("Unexpected error: %s", err.Error()))
 }
