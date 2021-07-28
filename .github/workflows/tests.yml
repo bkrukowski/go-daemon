@@ -50,3 +50,6 @@ jobs:
 
       - name: Ping error
         run: make ping-error
+
+      - name: Help
+        run: make help
