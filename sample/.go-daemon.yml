@@ -1,0 +1,22 @@
+templates:
+  infinite-loop: "bash -c 'while sleep {{ .sleep }}; do {{ .cmd }}; done'"
+
+processes:
+  clock:
+    template: "infinite-loop"
+    vars:
+      sleep: 1
+      cmd: "date +\"%T\""
+    tags: ["demo"]
+
+  ping-error:
+    template: "ping foo"
+    tags: ["demo", "ping"]
+
+  ping-ok:
+    template: "ping google.com"
+    tags: ["demo", "ping"]
+
+  ignore-signals: "go run sample/ignore-signals.go"
+
+  inline: "bash -c 'ping google.com || echo 1'"

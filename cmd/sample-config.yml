@@ -1,0 +1,20 @@
+# Global variables.
+# Those variables may be overridden in `vars` sections for particular processes.
+# Variables prefixed by "ENV_" contain default value for environment variables.
+vars:
+  ENV_USER: "jane-doe"
+
+# List of templates. Use {{ .var }} to use variable in the template.
+# Prefix a variable name by "ENV_", e.g. {{ .ENV_USER }} to use corresponding environment variable.
+templates:
+  ssh-tunnel: "ssh -N -L {{ .port }}:{{ .internalHost }}:{{ .internalPort }} {{ .ENV_USER }}@my-bastion.local"
+
+processes:
+  mysql:
+    # A template or the name of a template.
+    template: "ssh-tunnel"
+    vars:
+      port: 3307
+      internalHost: "mysql.local"
+      internalPort: "3306"
+    tags: ["db"]
