@@ -34,7 +34,7 @@ func main() {
 	root.SetOut(os.Stdout)
 	root.SetErr(os.Stderr)
 
-	root.AddCommand(cmd.NewRun())
+	root.AddCommand(cmd.NewRun() )
 
 	ctx, cancel := context.WithCancel(context.Background())
 	sig := make(chan os.Signal, 1)
