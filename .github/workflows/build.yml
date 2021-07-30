@@ -31,7 +31,7 @@ jobs:
         run: go mod download
 
       - name: gofmt
-        run: make format-ci
+        run: make format-push
 
       - name: Build
         run: make build

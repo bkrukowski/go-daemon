@@ -8,6 +8,10 @@ format-ci: export OUTPUT = $(shell go fmt ./...)
 format-ci:
 	if [ -n "${OUTPUT}" ]; then echo 'Execute "make format"'; exit 1; fi
 
+format-push: export OUTPUT = $(shell go fmt ./...)
+format-push:
+	git add ${OUTPUT} && git commit -m "go fmt" && git push
+
 format:
 	go fmt ./...
 
