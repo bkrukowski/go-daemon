@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/bkrukowski/go-daemon/cmd"
+	"github.com/bkrukowski/go-daemon/pkg/lennyface"
 	"github.com/bkrukowski/go-daemon/pkg/process"
 	"github.com/spf13/cobra"
 )
@@ -16,11 +17,6 @@ var (
 	version = "dev"
 	commit  = "none"
 	date    = "unknown"
-)
-
-const (
-	faceSleep = "(－.－)...zzz"
-	faceShrug = "¯\\_(ツ)_/¯"
 )
 
 func main() {
@@ -44,25 +40,16 @@ func main() {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
-	cancelled := false
-	defer func() {
-		if !cancelled {
-			return
-		}
-		_, _ = fmt.Fprintln(root.OutOrStdout(), faceSleep)
-	}()
-
 	go func() {
 		v := <-sig
 		cancel()
-		cancelled = true
 		_, _ = fmt.Fprintln(root.OutOrStdout(), fmt.Sprintf("Received signal \"%s\"...", v))
 		_, _ = fmt.Fprintf(root.OutOrStdout(), cmd.CleaningUpMsg, process.SIGKILLDelay)
 	}()
 
 	if err := root.ExecuteContext(ctx); err != nil {
 		_, _ = fmt.Fprintln(root.ErrOrStderr(), "Error:", err.Error())
-		_, _ = fmt.Fprintln(root.ErrOrStderr(), faceShrug)
+		_, _ = fmt.Fprintln(root.ErrOrStderr(), lennyface.Shrug)
 		os.Exit(1)
 	}
 }

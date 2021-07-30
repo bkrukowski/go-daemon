@@ -19,4 +19,4 @@ processes:
 
   ignore-signals: "go run sample/ignore-signals.go"
 
-  inline: "bash -c 'ping google.com || echo 1'"
+  inline: "bash -c 'ping localhost || echo 1'"

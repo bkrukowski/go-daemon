@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bkrukowski/go-daemon/pkg/config/provider"
+	"github.com/bkrukowski/go-daemon/pkg/lennyface"
 	"github.com/bkrukowski/go-daemon/pkg/process"
 	"github.com/bkrukowski/go-daemon/pkg/processdef"
 	"github.com/bkrukowski/go-daemon/pkg/runner"
@@ -50,7 +51,14 @@ func NewRun() *cobra.Command {
 		Use:   "run",
 		Short: "run [process1, process2, ...] [--tag staging, --tag elasticsearch, ...]",
 		Long:  long,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			defer func() {
+				if err != nil {
+					return
+				}
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), lennyface.Sleep)
+			}()
+
 			cfg, err := provider.NewDefault(func() string {
 				fn, ok := os.LookupEnv(envName)
 				if ok {
