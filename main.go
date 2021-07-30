@@ -44,9 +44,18 @@ func main() {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
+	cancelled := false
+	defer func() {
+		if !cancelled {
+			return
+		}
+		_, _ = fmt.Fprintln(root.OutOrStdout(), faceSleep)
+	}()
+
 	go func() {
 		v := <-sig
 		cancel()
+		cancelled = true
 		_, _ = fmt.Fprintln(root.OutOrStdout(), fmt.Sprintf("Received signal \"%s\"...", v))
 		_, _ = fmt.Fprintf(root.OutOrStdout(), cmd.CleaningUpMsg, process.SIGKILLDelay)
 	}()
@@ -56,5 +65,4 @@ func main() {
 		_, _ = fmt.Fprintln(root.ErrOrStderr(), faceShrug)
 		os.Exit(1)
 	}
-	_, _ = fmt.Fprintln(root.OutOrStdout(), faceSleep)
 }
