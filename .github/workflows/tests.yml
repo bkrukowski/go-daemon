@@ -9,7 +9,7 @@ on:
   pull_request:
 
 env:
-  GO_DAEMON_CACHE_BUILD=1
+  GO_DAEMON_CACHE_BUILD: true
 
 jobs:
 
