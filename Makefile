@@ -9,7 +9,7 @@ build: export GITHASH = $(shell git rev-parse --short HEAD)
 build: export VERSION = dev-$(shell git rev-parse --abbrev-ref HEAD)
 build: export DIRTY_SUFFIX = $(shell git diff --quiet || echo '-dirty')
 build: format
-	[[ -n "${GO_DAEMON_CACHE_BUILD}" ]] && test -f app.bin || go build -v -ldflags="-X 'main.date=${DATETIME}' -X 'main.commit=${GITHASH}${DIRTY_SUFFIX}' -X 'main.version=${VERSION}'" -o app.bin main.go
+	[ -n "${GO_DAEMON_CACHE_BUILD}" ] && test -f app.bin || go build -v -ldflags="-X 'main.date=${DATETIME}' -X 'main.commit=${GITHASH}${DIRTY_SUFFIX}' -X 'main.version=${VERSION}'" -o app.bin main.go
 
 help: build
 	./app.bin help run
