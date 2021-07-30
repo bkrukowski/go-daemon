@@ -50,6 +50,6 @@ func main() {
 	if err := root.ExecuteContext(ctx); err != nil {
 		_, _ = fmt.Fprintln(root.ErrOrStderr(), "Error:", err.Error())
 		_, _ = fmt.Fprintln(root.ErrOrStderr(), lennyface.Shrug)
-		os.Exit(1)
+		os.Exit( 1)
 	}
 }
