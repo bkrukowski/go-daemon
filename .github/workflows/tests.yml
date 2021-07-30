@@ -8,6 +8,9 @@ on:
       - main
   pull_request:
 
+env:
+  GO_DAEMON_CACHE_BUILD=1
+
 jobs:
 
   build:
