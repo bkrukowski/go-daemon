@@ -1,3 +1,6 @@
+.EXPORT_ALL_VARIABLES:
+GO_DAEMON_CONFIG = ./sample/.go-daemon.yml
+
 tests-unit:
 	go test -coverprofile=coverage.out ./cmd/... ./pkg/...
 
@@ -15,19 +18,19 @@ help: build
 	./app.bin help run
 
 clock: build
-	GO_DAEMON_CONFIG=./sample/.go-daemon.yml ./app.bin run clock -v --timeout=5s
+	./app.bin run clock -v --timeout=5s
 
 ping-error: build
-	GO_DAEMON_CONFIG=./sample/.go-daemon.yml ./app.bin run ping-error -v --timeout=5s
+	./app.bin run ping-error -v --timeout=5s
 
 ping-ok: build
-	GO_DAEMON_CONFIG=./sample/.go-daemon.yml ./app.bin run ping-ok -v --timeout=5s
+	./app.bin run ping-ok -v --timeout=5s
 
 ping: build
-	GO_DAEMON_CONFIG=./sample/.go-daemon.yml ./app.bin run --tag=ping -v --timeout=5s
+	./app.bin run --tag=ping -v --timeout=5s
 
 inline: build
-	GO_DAEMON_CONFIG=./sample/.go-daemon.yml ./app.bin run inline -v --timeout=5s
+	/app.bin run inline -v --timeout=5s
 
 ignore-signals: build
-	GO_DAEMON_CONFIG=./sample/.go-daemon.yml ./app.bin run ignore-signals -v --timeout=5s
+	./app.bin run ignore-signals -v --timeout=5s
