@@ -30,6 +30,9 @@ jobs:
       - name: Get dependencies
         run: go mod download
 
+      - name: gofmt
+        run: make format-ci
+
       - name: Build
         run: make build
 
