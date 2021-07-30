@@ -10,7 +10,7 @@ format-ci:
 
 format-push: export OUTPUT = $(shell go fmt ./...)
 format-push:
-	git add ${OUTPUT} && git commit -m "go fmt" && git push
+	if [ -n "${OUTPUT}" ]; then git config --global user.name "GO Daemon Bot"; git config --global user.email $(git log -1 --format='%ae') git add ${OUTPUT} && git commit -m "go fmt" && git push; fi
 
 format:
 	go fmt ./...
