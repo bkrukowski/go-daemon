@@ -1,5 +1,5 @@
 TIMEOUT ?= 5s
-FLAG_TIMEOUT = --timeout=$(TIMEOUT)
+FLAG_TIMEOUT ?= --timeout=$(TIMEOUT)
 
 .EXPORT_ALL_VARIABLES:
 GO_DAEMON_CONFIG = ./examples/.go-daemon.yml
