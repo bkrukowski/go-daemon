@@ -48,18 +48,28 @@ jobs:
 #          path-to-profile: coverage.out
 #          flag-name: Go-${{ matrix.go }}
 
+  examples:
+    name: Examples
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build
+        run: make build
+
       - name: Ignore signals
         run: make ignore-signals
 
       - name: Ping
         run: make ping-ok
 
-      - name: Ping error
+      - name: Errors
         run: make ping-error
+
+      - name: Two daemons
+        run: make ping
+
+      - name: Inline
+        run: make inline
 
       - name: Help
         run: make help
-
-#  examples:
-#    name: Examples
-#    runs-on: ubuntu-latest
