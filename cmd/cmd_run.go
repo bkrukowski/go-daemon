@@ -16,8 +16,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//go:embed sample-config.yml
-var sampleConfig string
+var (
+	//go:embed help.txt
+	help string
+)
 
 const CleaningUpMsg = "Cleaning up can take up to %s\n"
 
@@ -32,25 +34,12 @@ func NewRun() *cobra.Command {
 		timeoutFormat     string
 		verbose           bool
 		ignoreNonZeroCode bool
-
-		long = "Runs processes defined in configuration file.\n" +
-			"Default configuration filename is " + defaultFileName + ",\n" +
-			"override environment variable " + envName + " to change it.\n" +
-			"By default all defined processes will be triggered,\n" +
-			"to filter them provide their names as arguments\n" +
-			"or use option --tag to filter by tags.\n" +
-			"\n" +
-			"** Sample config **\n\n" +
-			defaultFileName + "\n" +
-			"------------------------------------------------------------\n" +
-			sampleConfig +
-			"------------------------------------------------------------\n"
 	)
 
 	cmd := &cobra.Command{
 		Use:   "run",
 		Short: "run [process1, process2, ...] [--tag staging, --tag elasticsearch, ...]",
-		Long:  long,
+		Long:  help,
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			defer func() {
 				if err != nil {

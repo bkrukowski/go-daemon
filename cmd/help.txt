@@ -1,3 +1,14 @@
+Runs processes defined in configuration file.
+Default configuration filename is ~/.go-daemon.yml,
+override environment variable GO_DAEMON_CONFIG to change it.
+By default all defined processes will be triggered,
+to filter them provide their names as arguments
+or use option --tag to filter by tags.
+
+** Example config **
+
+~/.go-daemon.yml
+------------------------------------------------------------------------------------------------------------------------
 # Global variables.
 # Those variables may be overridden in `vars` sections for particular processes.
 # Variables prefixed by "ENV_" contain default value for environment variables.
@@ -18,3 +29,4 @@ processes:
       internalHost: "mysql.local"
       internalPort: "3306"
     tags: ["db"]
+------------------------------------------------------------------------------------------------------------------------
