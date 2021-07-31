@@ -1,5 +1,5 @@
 .EXPORT_ALL_VARIABLES:
-GO_DAEMON_CONFIG = ./sample/.go-daemon.yml
+GO_DAEMON_CONFIG = ./examples/.go-daemon.yml
 
 tests-unit:
 	go test -coverprofile=coverage.out ./cmd/... ./pkg/...
