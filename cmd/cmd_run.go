@@ -104,6 +104,7 @@ func NewRun() *cobra.Command {
 					case <-cmd.Context().Done():
 					case <-ctx.Done():
 						_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Timed out...")
+						// todo print it with 1s delay
 						_, _ = fmt.Fprintf(cmd.OutOrStdout(), CleaningUpMsg, process.SIGKILLDelay)
 					}
 				}()
