@@ -46,6 +46,9 @@ func NewRun() *cobra.Command {
 				_, _ = fmt.Fprintln(cmd.OutOrStdout(), lennyface.Sleep)
 			}()
 
+			finished := make(chan bool)
+			defer close(finished)
+
 			cfg, err := provider.NewDefault(func() (f string) {
 				defer func() {
 					if !verbose {
@@ -104,8 +107,14 @@ func NewRun() *cobra.Command {
 					case <-cmd.Context().Done():
 					case <-ctx.Done():
 						_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Timed out...")
-						// todo print it with 1s delay
-						_, _ = fmt.Fprintf(cmd.OutOrStdout(), CleaningUpMsg, process.SIGKILLDelay)
+						t := time.NewTimer(time.Second)
+						defer t.Stop()
+						select {
+						case <-finished:
+						case <-t.C:
+							// Display it only when process ignores SIGTERM
+							_, _ = fmt.Fprintf(cmd.OutOrStdout(), CleaningUpMsg, process.SIGKILLDelay)
+						}
 					}
 				}()
 			}
