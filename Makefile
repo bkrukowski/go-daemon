@@ -27,7 +27,7 @@ build: VERSION = dev-$(shell git rev-parse --abbrev-ref HEAD)
 build: DIRTY_SUFFIX = $(shell git diff --quiet || echo '-dirty')
 build: format
 	if [ -n "${GO_DAEMON_CACHE_BUILD}" ] && test -f app.bin; then\
-		echo "[make build] Do not re-compile, used cached binary";\
+		echo "[make build] Do not re-compile, use cached binary.";\
 	else\
 		go build -v -ldflags="-X 'main.date=${DATETIME}' -X 'main.commit=${GITHASH}${DIRTY_SUFFIX}' -X 'main.version=${VERSION}'" -o app.bin main.go;\
 		echo "[make build] The app has been compiled. Use ./app.bin.";\
