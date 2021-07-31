@@ -59,7 +59,14 @@ func NewRun() *cobra.Command {
 				_, _ = fmt.Fprintln(cmd.OutOrStdout(), lennyface.Sleep)
 			}()
 
-			cfg, err := provider.NewDefault(func() string {
+			cfg, err := provider.NewDefault(func() (f string) {
+				defer func() {
+					if !verbose {
+						return
+					}
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Configuration file: %s\n", f)
+				}()
+
 				fn, ok := os.LookupEnv(envName)
 				if ok {
 					return fn
