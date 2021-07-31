@@ -27,11 +27,11 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
-      - name: Get dependencies
-        run: go mod download
+#      - name: Get dependencies
+#        run: go mod download
 
       - name: gofmt
-        run: make format-push
+        run: make format-ci
 
       - name: Build
         run: make build
@@ -59,3 +59,7 @@ jobs:
 
       - name: Help
         run: make help
+
+#  examples:
+#    name: Examples
+#    runs-on: ubuntu-latest

@@ -13,7 +13,7 @@ type Process struct {
 	Compiled struct {
 		Template string
 		Vars     map[string]string
-	 }
+	}
 }
 
 func (p *Process) UnmarshalYAML(unmarshal func(interface{}) error) error {

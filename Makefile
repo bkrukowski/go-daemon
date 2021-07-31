@@ -4,21 +4,17 @@ GO_DAEMON_CONFIG = ./sample/.go-daemon.yml
 tests-unit:
 	go test -coverprofile=coverage.out ./cmd/... ./pkg/...
 
-format-ci: export OUTPUT = $(shell go fmt ./...)
+format-ci: OUTPUT = $(shell go fmt ./...)
 format-ci:
 	if [ -n "${OUTPUT}" ]; then echo 'Execute "make format"'; exit 1; fi
-
-format-push: export OUTPUT = $(shell go fmt ./...)
-format-push:
-	if [ -n "${OUTPUT}" ]; then git config --global user.name "GO Daemon Bot" && git config --global user.email "go-daemon@localhost" && git add . && git commit -m "go fmt" && git push; fi
 
 format:
 	go fmt ./...
 
-build: export DATETIME = $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
-build: export GITHASH = $(shell git rev-parse --short HEAD)
-build: export VERSION = dev-$(shell git rev-parse --abbrev-ref HEAD)
-build: export DIRTY_SUFFIX = $(shell git diff --quiet || echo '-dirty')
+build: DATETIME = $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
+build: GITHASH = $(shell git rev-parse --short HEAD)
+build: VERSION = dev-$(shell git rev-parse --abbrev-ref HEAD)
+build: DIRTY_SUFFIX = $(shell git diff --quiet || echo '-dirty')
 build: format
 	[ -n "${GO_DAEMON_CACHE_BUILD}" ] && test -f app.bin || go build -v -ldflags="-X 'main.date=${DATETIME}' -X 'main.commit=${GITHASH}${DIRTY_SUFFIX}' -X 'main.version=${VERSION}'" -o app.bin main.go
 
