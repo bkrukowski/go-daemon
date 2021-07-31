@@ -31,16 +31,16 @@ clock: build
 	./app.bin run clock -v ${FLAG_TIMEOUT}
 
 ping-error: build
-	./app.bin run ping-error -v ${TIMEOUT}
+	./app.bin run ping-error -v ${FLAG_TIMEOUT}
 
 ping-ok: build
-	./app.bin run ping-ok -v ${TIMEOUT}
+	./app.bin run ping-ok -v ${FLAG_TIMEOUT}
 
 ping: build
-	./app.bin run --tag=ping -v ${TIMEOUT}
+	./app.bin run --tag=ping -v ${FLAG_TIMEOUT}
 
 inline: build
-	./app.bin run inline -v ${TIMEOUT}
+	./app.bin run inline -v ${FLAG_TIMEOUT}
 
 ignore-signals: build
-	./app.bin run ignore-signals -v ${TIMEOUT}
+	./app.bin run ignore-signals -v ${FLAG_TIMEOUT}
