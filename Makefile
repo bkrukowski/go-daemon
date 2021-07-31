@@ -21,6 +21,9 @@ build: format
 help: build
 	./app.bin help run
 
+version: build
+	./app.bin -v
+
 clock: build
 	./app.bin run clock -v --timeout=5s
 
@@ -34,7 +37,7 @@ ping: build
 	./app.bin run --tag=ping -v --timeout=5s
 
 inline: build
-	/app.bin run inline -v --timeout=5s
+	./app.bin run inline -v --timeout=5s
 
 ignore-signals: build
 	./app.bin run ignore-signals -v --timeout=5s
