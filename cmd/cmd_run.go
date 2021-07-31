@@ -16,10 +16,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	//go:embed help.txt
-	help string
-)
+//go:embed help.txt
+var help string
 
 const CleaningUpMsg = "Cleaning up can take up to %s\n"
 
