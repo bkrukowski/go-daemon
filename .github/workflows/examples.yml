@@ -1,4 +1,4 @@
-name: Build
+name: Examples
 
 on:
   push:
@@ -13,9 +13,10 @@ env:
 
 jobs:
 
-  build:
-    name: Build
+  examples:
+    name: Examples
     runs-on: ubuntu-latest
+
     steps:
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
@@ -35,14 +36,20 @@ jobs:
       - name: Build
         run: make build
 
-      - name: Test
-        run: make tests-unit
+      - name: Ignore signals
+        run: make ignore-signals
 
-#      - name: Test coverage
-#        run: make code-coverage
-#
-#      - name: Send coverage
-#        uses: shogo82148/actions-goveralls@v1
-#        with:
-#          path-to-profile: coverage.out
-#          flag-name: Go-${{ matrix.go }}
+      - name: Ping
+        run: make ping-ok
+
+      - name: Errors
+        run: make ping-error
+
+      - name: Two daemons
+        run: make ping
+
+      - name: Inline
+        run: make inline
+
+      - name: Help
+        run: make help
