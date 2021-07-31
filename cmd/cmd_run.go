@@ -102,6 +102,10 @@ func NewRun() *cobra.Command {
 				ctx, cancel = context.WithTimeout(ctx, timeout)
 				defer cancel()
 
+				if verbose {
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Timeout: %s\n", timeout.String())
+				}
+
 				go func() {
 					select {
 					case <-cmd.Context().Done():
