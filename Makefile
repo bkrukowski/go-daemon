@@ -9,7 +9,10 @@ tests-unit:
 
 format-ci: OUTPUT = $(shell go fmt ./...)
 format-ci:
-	if [ -n "${OUTPUT}" ]; then echo 'Execute "make format"'; exit 1; fi
+	if [ -n "${OUTPUT}" ]; then\
+		echo 'Execute "make format"';\
+		exit 1;\
+	fi
 
 format:
 	go fmt ./...
@@ -19,7 +22,11 @@ build: GITHASH = $(shell git rev-parse --short HEAD)
 build: VERSION = dev-$(shell git rev-parse --abbrev-ref HEAD)
 build: DIRTY_SUFFIX = $(shell git diff --quiet || echo '-dirty')
 build: format
-	[ -n "${GO_DAEMON_CACHE_BUILD}" ] && test -f app.bin || go build -v -ldflags="-X 'main.date=${DATETIME}' -X 'main.commit=${GITHASH}${DIRTY_SUFFIX}' -X 'main.version=${VERSION}'" -o app.bin main.go
+	if [ -n "${GO_DAEMON_CACHE_BUILD}" ] && test -f app.bin; then\
+		echo "Do not re-compile, used cached binary";\
+	else\
+		go build -v -ldflags="-X 'main.date=${DATETIME}' -X 'main.commit=${GITHASH}${DIRTY_SUFFIX}' -X 'main.version=${VERSION}'" -o app.bin main.go;\
+	fi
 
 help: build
 	./app.bin help run
