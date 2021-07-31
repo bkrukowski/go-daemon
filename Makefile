@@ -1,6 +1,8 @@
+TIMEOUT ?= 5s
+FLAG_TIMEOUT = --timeout=$(TIMEOUT)
+
 .EXPORT_ALL_VARIABLES:
 GO_DAEMON_CONFIG = ./examples/.go-daemon.yml
-FLAG_TIMEOUT = --timeout=5s
 
 tests-unit:
 	go test -coverprofile=coverage.out ./cmd/... ./pkg/...
@@ -29,16 +31,16 @@ clock: build
 	./app.bin run clock -v ${FLAG_TIMEOUT}
 
 ping-error: build
-	./app.bin run ping-error -v ${FLAG_TIMEOUT}
+	./app.bin run ping-error -v ${TIMEOUT}
 
 ping-ok: build
-	./app.bin run ping-ok -v ${FLAG_TIMEOUT}
+	./app.bin run ping-ok -v ${TIMEOUT}
 
 ping: build
-	./app.bin run --tag=ping -v ${FLAG_TIMEOUT}
+	./app.bin run --tag=ping -v ${TIMEOUT}
 
 inline: build
-	./app.bin run inline -v ${FLAG_TIMEOUT}
+	./app.bin run inline -v ${TIMEOUT}
 
 ignore-signals: build
-	./app.bin run ignore-signals -v ${FLAG_TIMEOUT}
+	./app.bin run ignore-signals -v ${TIMEOUT}
