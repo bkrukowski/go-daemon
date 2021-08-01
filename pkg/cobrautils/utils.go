@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/bkrukowski/go-daemon/pkg/process"
 	"github.com/spf13/cobra"
 )
 
@@ -57,12 +56,12 @@ func NewCancelablePreRun(sig <-chan os.Signal, finished <-chan bool, cancel func
 			}
 			cancel()
 
-			// Do not print message immediately
-			// todo make msg configurable
+			// Do not print message immediately.
+			// If finishing all will take less than 1 second, there is no need to print this information.
 			t.Reset(time.Second)
 			select {
 			case <-t.C:
-				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Cleaning up can take up to %s\n", process.SIGKILLDelay)
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Cleaning up can take few seconds\n")
 			case <-finished:
 			}
 		}()
