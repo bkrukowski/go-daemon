@@ -4,13 +4,13 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"io"
 	"os"
 	"sort"
 	"time"
 
 	"github.com/bkrukowski/go-daemon/pkg/config/provider"
 	"github.com/bkrukowski/go-daemon/pkg/lennyface"
-	"github.com/bkrukowski/go-daemon/pkg/process"
 	"github.com/bkrukowski/go-daemon/pkg/processdef"
 	"github.com/bkrukowski/go-daemon/pkg/runner"
 	"github.com/spf13/cobra"
@@ -20,6 +20,13 @@ import (
 var help string
 
 const CleaningUpMsg = "Cleaning up can take up to %s\n"
+
+func mustPrintf(w io.Writer, s string, i ...interface{}) {
+	_, err := fmt.Fprintf(w, s, i...)
+	if err != nil {
+		panic(err)
+	}
+}
 
 func NewRun() *cobra.Command {
 	const (
@@ -39,11 +46,12 @@ func NewRun() *cobra.Command {
 		Short: "run [process1, process2, ...] [--tag staging, --tag elasticsearch, ...]",
 		Long:  help,
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			fmt.Println("test", timeoutFormat, cmd.Flag("timeout").Value)
 			defer func() {
 				if err != nil {
 					return
 				}
-				_, _ = fmt.Fprintln(cmd.OutOrStdout(), lennyface.Sleep)
+				mustPrintf(cmd.OutOrStdout(), lennyface.Sleep + "\n")
 			}()
 
 			finished := make(chan bool)
@@ -54,7 +62,7 @@ func NewRun() *cobra.Command {
 					if !verbose {
 						return
 					}
-					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Configuration file: %s\n", f)
+					mustPrintf(cmd.OutOrStdout(), "Configuration file: %s\n", f)
 				}()
 
 				fn, ok := os.LookupEnv(envName)
@@ -101,26 +109,6 @@ func NewRun() *cobra.Command {
 				var cancel context.CancelFunc
 				ctx, cancel = context.WithTimeout(ctx, timeout)
 				defer cancel()
-
-				if verbose {
-					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Timeout: %s\n", timeout.String())
-				}
-
-				go func() {
-					select {
-					case <-cmd.Context().Done():
-					case <-ctx.Done():
-						_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Timed out...")
-						t := time.NewTimer(time.Second)
-						defer t.Stop()
-						select {
-						case <-finished:
-						case <-t.C:
-							// Display it only when process ignores SIGTERM
-							_, _ = fmt.Fprintf(cmd.OutOrStdout(), CleaningUpMsg, process.SIGKILLDelay)
-						}
-					}
-				}()
 			}
 			return s.Run(ctx, r)
 		},
@@ -129,7 +117,7 @@ func NewRun() *cobra.Command {
 	cmd.Flags().StringArrayVarP(&tags, "tag", "t", nil, "filter by tag")
 	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	cmd.Flags().BoolVarP(&ignoreNonZeroCode, "ignore-exit-code", "i", true, "ignore non-zero exit code")
-	cmd.Flags().StringVarP(&timeoutFormat, "timeout", "", "", "timeout, see https://pkg.go.dev/time#ParseDuration")
+	//cmd.Flags().StringVarP(&timeoutFormat, "timeout", "", "", "timeout, see https://pkg.go.dev/time#ParseDuration")
 
 	return cmd
 }

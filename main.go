@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"math"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/bkrukowski/go-daemon/cmd"
 	"github.com/bkrukowski/go-daemon/pkg/lennyface"
@@ -20,6 +22,14 @@ var (
 )
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+
+	finished := make(chan bool)
+
+	var timeoutFormat string
 	root := cobra.Command{
 		Use:           "go-daemon",
 		Short:         "",
@@ -27,7 +37,46 @@ func main() {
 		Version:       fmt.Sprintf("%s %s %s", version, commit, date),
 		SilenceUsage:  true,
 		SilenceErrors: true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
+			if cmd.Name() != "run" {
+				return
+			}
+			fmt.Println(cmd.Name())
+			d := time.Duration(math.MaxInt64)
+			if timeoutFormat != "" {
+				d, err = time.ParseDuration(timeoutFormat)
+			}
+			if err != nil {
+				return fmt.Errorf("invalid timeout: %w", err)
+			}
+
+			// todo print timeout in verbose mode
+
+			go func() {
+				t := time.NewTimer(d)
+				defer t.Stop()
+
+				select {
+				case <-t.C:
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Timed out...\n")
+				case v := <-sig:
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Received signal \"%s\"...\n", v)
+				}
+				cancel()
+
+				t.Reset(time.Second)
+				select {
+				case <-t.C:
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Cleaning up can take up to %s\n", process.SIGKILLDelay)
+				case <-finished:
+				}
+			}()
+
+			return nil
+		},
 	}
+
+	root.PersistentFlags().StringVarP(&timeoutFormat, "timeout", "", "", "timeout, see https://pkg.go.dev/time#ParseDuration")
 
 	// see cobra.Command{}.Print
 	// it prints to stderr if output is not defined
@@ -36,18 +85,10 @@ func main() {
 
 	root.AddCommand(cmd.NewRun())
 
-	ctx, cancel := context.WithCancel(context.Background())
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+	err := root.ExecuteContext(ctx)
+	close(finished)
 
-	go func() {
-		v := <-sig
-		cancel()
-		_, _ = fmt.Fprintln(root.OutOrStdout(), fmt.Sprintf("Received signal \"%s\"...", v))
-		_, _ = fmt.Fprintf(root.OutOrStdout(), cmd.CleaningUpMsg, process.SIGKILLDelay)
-	}()
-
-	if err := root.ExecuteContext(ctx); err != nil {
+	if err != nil {
 		_, _ = fmt.Fprintln(root.ErrOrStderr(), "Error:", err.Error())
 		_, _ = fmt.Fprintln(root.ErrOrStderr(), lennyface.Shrug)
 		os.Exit(1)
