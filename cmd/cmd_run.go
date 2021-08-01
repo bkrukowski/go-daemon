@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 
+	"github.com/bkrukowski/go-daemon/pkg/cobrautils"
 	"github.com/bkrukowski/go-daemon/pkg/config/provider"
 	"github.com/bkrukowski/go-daemon/pkg/lennyface"
 	"github.com/bkrukowski/go-daemon/pkg/processdef"
@@ -40,7 +41,7 @@ func NewRun() *cobra.Command {
 		Short: "run [process1, process2, ...] [--tag staging, --tag elasticsearch, ...]",
 		Long:  help,
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			verbose, err := cmd.Flags().GetBool("verbose")
+			verbose, err := cmd.Flags().GetBool(cobrautils.FlagVerbose)
 			if err != nil {
 				return
 			}
