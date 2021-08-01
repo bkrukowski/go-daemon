@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -14,13 +16,15 @@ const (
 	FlagVerbose = "verbose"
 )
 
-// NewCancelablePreRun returns func you can assign to cobra.Command{}.PersistentPreRunE
-// or cobra.Command{}.PreRunE.It will call cancel func when signal will be published to the channel
-// or timeout will happen.
+// NewCancelablePreRun returns func you can assign to cobra.Command{}.PersistentPreRunE or cobra.Command{}.PreRunE.
+// It calls cancels func when syscall.SIGINT or syscall.SIGTERM is sent to current process or timeout happens.
 //
 // Timeout is defined as a string flag with name "timeout'.
 // To parse timeout time.ParseDuration will be used.
-func NewCancelablePreRun(sig <-chan os.Signal, finished <-chan bool, cancel func()) func(*cobra.Command, []string) error {
+func NewCancelablePreRun(cancel func(), finished <-chan bool) func(*cobra.Command, []string) error {
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+
 	return func(cmd *cobra.Command, args []string) (err error) {
 		timeoutFormat, err := cmd.Flags().GetString(FlagTimeout)
 		if err != nil {

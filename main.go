@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/bkrukowski/go-daemon/cmd"
 	"github.com/bkrukowski/go-daemon/pkg/cobrautils"
@@ -21,9 +19,6 @@ var (
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
-
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
 	finished := make(chan bool)
 
@@ -42,7 +37,7 @@ func main() {
 				return nil
 			}
 
-			return cobrautils.NewCancelablePreRun(sig, finished, cancel)(cmd, args)
+			return cobrautils.NewCancelablePreRun(cancel, finished)(cmd, args)
 		},
 	}
 
