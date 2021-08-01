@@ -53,9 +53,6 @@ func NewRun() *cobra.Command {
 				mustPrintf(cmd.OutOrStdout(), lennyface.Sleep+"\n")
 			}()
 
-			finished := make(chan bool)
-			defer close(finished)
-
 			cfg, err := provider.NewDefault(func() (f string) {
 				defer func() {
 					if !verbose {

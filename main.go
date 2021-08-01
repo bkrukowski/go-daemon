@@ -35,8 +35,10 @@ func main() {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			// todo
-			if cmd.Name() != "run" {
+			switch cmd.Name() {
+			case "run":
+
+			default:
 				return nil
 			}
 
