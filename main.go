@@ -29,7 +29,11 @@ func main() {
 
 	finished := make(chan bool)
 
-	var timeoutFormat string
+	var (
+		timeoutFormat string
+		verbose       bool
+	)
+
 	root := cobra.Command{
 		Use:           "go-daemon",
 		Short:         "",
@@ -41,7 +45,7 @@ func main() {
 			if cmd.Name() != "run" {
 				return
 			}
-			fmt.Println(cmd.Name())
+
 			d := time.Duration(math.MaxInt64)
 			if timeoutFormat != "" {
 				d, err = time.ParseDuration(timeoutFormat)
@@ -50,7 +54,9 @@ func main() {
 				return fmt.Errorf("invalid timeout: %w", err)
 			}
 
-			// todo print timeout in verbose mode
+			if verbose {
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Timeout: %s\n", d)
+			}
 
 			go func() {
 				t := time.NewTimer(d)
@@ -77,6 +83,7 @@ func main() {
 	}
 
 	root.PersistentFlags().StringVarP(&timeoutFormat, "timeout", "", "", "timeout, see https://pkg.go.dev/time#ParseDuration")
+	root.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 
 	// see cobra.Command{}.Print
 	// it prints to stderr if output is not defined

@@ -1,13 +1,11 @@
 package cmd
 
 import (
-	"context"
 	_ "embed"
 	"fmt"
 	"io"
 	"os"
 	"sort"
-	"time"
 
 	"github.com/bkrukowski/go-daemon/pkg/config/provider"
 	"github.com/bkrukowski/go-daemon/pkg/lennyface"
@@ -18,8 +16,6 @@ import (
 
 //go:embed help.txt
 var help string
-
-const CleaningUpMsg = "Cleaning up can take up to %s\n"
 
 func mustPrintf(w io.Writer, s string, i ...interface{}) {
 	_, err := fmt.Fprintf(w, s, i...)
@@ -36,8 +32,6 @@ func NewRun() *cobra.Command {
 
 	var (
 		tags              []string
-		timeoutFormat     string
-		verbose           bool
 		ignoreNonZeroCode bool
 	)
 
@@ -46,12 +40,16 @@ func NewRun() *cobra.Command {
 		Short: "run [process1, process2, ...] [--tag staging, --tag elasticsearch, ...]",
 		Long:  help,
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			fmt.Println("test", timeoutFormat, cmd.Flag("timeout").Value)
+			verbose, err := cmd.Flags().GetBool("verbose")
+			if err != nil {
+				return
+			}
+
 			defer func() {
 				if err != nil {
 					return
 				}
-				mustPrintf(cmd.OutOrStdout(), lennyface.Sleep + "\n")
+				mustPrintf(cmd.OutOrStdout(), lennyface.Sleep+"\n")
 			}()
 
 			finished := make(chan bool)
@@ -97,27 +95,13 @@ func NewRun() *cobra.Command {
 				IgnoreExitCode: ignoreNonZeroCode,
 				Verbose:        verbose,
 			}
-			ctx := cmd.Context()
-			if timeoutFormat != "" {
-				timeout, err := time.ParseDuration(timeoutFormat)
-				if err != nil {
-					return fmt.Errorf("invalid timout: %w", err)
-				}
-				if timeout < 0 {
-					return fmt.Errorf("the given timeout is negative: `%s`", timeoutFormat)
-				}
-				var cancel context.CancelFunc
-				ctx, cancel = context.WithTimeout(ctx, timeout)
-				defer cancel()
-			}
-			return s.Run(ctx, r)
+
+			return s.Run(cmd.Context(), r)
 		},
 	}
 
 	cmd.Flags().StringArrayVarP(&tags, "tag", "t", nil, "filter by tag")
-	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	cmd.Flags().BoolVarP(&ignoreNonZeroCode, "ignore-exit-code", "i", true, "ignore non-zero exit code")
-	//cmd.Flags().StringVarP(&timeoutFormat, "timeout", "", "", "timeout, see https://pkg.go.dev/time#ParseDuration")
 
 	return cmd
 }
