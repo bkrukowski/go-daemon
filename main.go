@@ -20,7 +20,7 @@ var (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 
-	finished := make(chan bool)
+	finished := make(chan struct{})
 
 	root := cobra.Command{
 		Use:           "go-daemon",
@@ -29,16 +29,6 @@ func main() {
 		Version:       fmt.Sprintf("%s %s %s", version, commit, date),
 		SilenceUsage:  true,
 		SilenceErrors: true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			switch cmd.Name() {
-			case "run":
-
-			default:
-				return nil
-			}
-
-			return cobrautils.NewCancelablePreRun(cancel, finished)(cmd, args)
-		},
 	}
 
 	root.PersistentFlags().StringP(cobrautils.FlagTimeout, "", "", "timeout, see https://pkg.go.dev/time#ParseDuration")
@@ -49,7 +39,9 @@ func main() {
 	root.SetOut(os.Stdout)
 	root.SetErr(os.Stderr)
 
-	root.AddCommand(cmd.NewRun())
+	cmdRun := cmd.NewRun()
+	cmdRun.PreRunE = cobrautils.NewCancelablePreRun(cancel, finished)
+	root.AddCommand(cmdRun)
 
 	err := root.ExecuteContext(ctx)
 	close(finished)

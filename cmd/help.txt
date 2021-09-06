@@ -1,6 +1,6 @@
-Runs processes defined in configuration file.
-Default configuration filename is ~/.go-daemon.yml,
-override environment variable GO_DAEMON_CONFIG to change it.
+Runs processes defined in the configuration file.
+The default configuration filename is ~/.go-daemon.yml,
+override the environment variable GO_DAEMON_CONFIG to change it.
 By default all defined processes will be triggered,
 to filter them provide their names as arguments
 or use option --tag to filter by tags.

@@ -21,7 +21,7 @@ const (
 //
 // Timeout is defined as a string flag with name "timeout'.
 // To parse timeout time.ParseDuration will be used.
-func NewCancelablePreRun(cancel func(), finished <-chan bool) func(*cobra.Command, []string) error {
+func NewCancelablePreRun(cancel func(), finished <-chan struct{}) func(*cobra.Command, []string) error {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
